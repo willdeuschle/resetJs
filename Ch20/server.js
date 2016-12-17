@@ -75,3 +75,19 @@ methods.PUT = function(path, respond, request) {
   });
   request.pipe(outStream);
 };
+
+methods.MKCOL = function(path, respond) {
+    fs.stat(path, function(error, stats) {
+        // if there is nothing there create the directory and succeed
+        if (error && error.code == "ENOENT")
+            fs.mkdir(path, respondErrorOrNothing(respond))
+        else if (error)
+            respond(500, error.toString())
+        // if there is a directory there respond with 204
+        else if (stats.isDirectory())
+            respond(204)
+        else
+            respond(400, 'File already exists here')
+
+    })
+}
